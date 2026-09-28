@@ -2,35 +2,38 @@
 #include <ctime>
 
 int main() {
-    EstacionMonitoreo est("EST01", "Bahia de Huata");
-    Sensor s1("SEN001", "temperatura", "Orilla - Huata");
-    Sensor s2("SEN002", "turbidez", "Zona de totorales");
-    est.agregarSensor(s1);
-    est.agregarSensor(s2);
-    est.imprimir();
-    s1.imprimir();
+    Libro libro("BIB001", "Los rios profundos", "Jose Maria Arguedas", "general");
+    libro.imprimir();
+    std::cout << "Dias de prestamo: " << libro.diasPrestamo() << "\n";
 
-    Lectura lect(std::time(nullptr), 14.5, "SEN001");
-    std::cout << "Lectura valida: " << lect.verificarConSensor(s1) << "\n";
-    std::cout << "Antiguedad (h): " << lect.antiguedadHoras() << "\n";
+    Lector lector("LEC001", "Rosa Mamani", "comunidad");
+    lector.imprimir();
 
-    // Invariantes -- deben lanzar error
-    
+    Prestamo prestamo(libro, lector, std::time(nullptr));
+    std::cout << "Fecha devolucion esperada (epoch): " << prestamo.fechaDevolucionEsperada() << "\n";
+    libro.imprimir();
+    lector.imprimir();
+
     try {
-        Sensor bad("BAD", "temperatura", "x");
+        Libro bad("X9", "titulo", "autor", "general");
     } catch (const std::invalid_argument& ex) {
         std::cout << "Error esperado: " << ex.what() << "\n";
     }
     try {
-        est.agregarSensor(s1); // duplicado
+        Libro bad("BIB002", "titulo", "autor", "rara");
     } catch (const std::invalid_argument& ex) {
         std::cout << "Error esperado: " << ex.what() << "\n";
     }
     try {
-        Lectura lectMala(std::time(nullptr), 999, "SEN001");
-        lectMala.verificarConSensor(s1); // fuera de rango
+        Lector bad("X9", "nombre", "comunidad");
     } catch (const std::invalid_argument& ex) {
         std::cout << "Error esperado: " << ex.what() << "\n";
     }
+    try {
+        Prestamo otro(libro, lector, std::time(nullptr)); // libro ya prestado
+    } catch (const std::runtime_error& ex) {
+        std::cout << "Error esperado: " << ex.what() << "\n";
+    }
+
     return 0;
 }
